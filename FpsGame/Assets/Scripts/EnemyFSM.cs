@@ -32,12 +32,17 @@ public class EnemyFSM : MonoBehaviour
     private int maxHp = 15;
     [SerializeField] private Slider hpSlider;
     public int weaponPower = 5;
+    [SerializeField]private Animator anim;
+    private Quaternion originRot;
+    
     private void Start()
     {
         m_State = EnemyState.Idle;
         cc = GetComponent<CharacterController>();
         player = GameObject.Find("Player").transform;
         originPos = transform.position;
+        originRot = transform.rotation;
+        anim.GetComponentInChildren<Animator>();
     }
 
     private void Update()
@@ -57,10 +62,10 @@ public class EnemyFSM : MonoBehaviour
                 Return();
                 break;
             case EnemyState.Damaged:
-                //Damaged();
+                Damaged();
                 break;
             case EnemyState.Die:
-                //Die();
+                Die();
                 break;
         }
 
@@ -73,6 +78,7 @@ public class EnemyFSM : MonoBehaviour
         {
             m_State = EnemyState.Move;
             
+            anim.SetTrigger("IdleToMove");
         }
     }
 
@@ -87,11 +93,13 @@ public class EnemyFSM : MonoBehaviour
         {
             Vector3 dir = (player.position - transform.position).normalized;
             cc.Move(dir * moveSpeed * Time.deltaTime);
+            transform.forward = dir;
         }
         else
         {
             m_State = EnemyState.Attack;
             currentTime = attackDelay;
+            anim.SetTrigger("MoveToAttackDelay");
         }
     }
 
@@ -102,29 +110,40 @@ public class EnemyFSM : MonoBehaviour
             currentTime += Time.deltaTime;
             if (currentTime > attackDelay)
             {
-                player.GetComponent<PlayerMove>().DamageAction(attackPower);
+                //player.GetComponent<PlayerMove>().DamageAction(attackPower);
                 currentTime = 0;
+                anim.SetTrigger("StartAttack");
             }
         }
         else
         {
             m_State = EnemyState.Move;
             currentTime = 0;
+            anim.SetTrigger("AttackToMove");
         }
     }
 
+    public void AttackAction()
+    {
+        player.GetComponent<PlayerMove>().DamageAction(attackPower);
+    }
+    
     private void Return()
     {
         if (Vector3.Distance(transform.position, originPos) > 0.1f)
         {
             Vector3 dir = (originPos - transform.position).normalized;
             cc.Move(dir * moveSpeed * Time.deltaTime);
+            transform.forward = dir;
+            
         }
         else
         {
             transform.position = originPos;
+            transform.rotation = originRot;
             hp = maxHp;
             m_State = EnemyState.Idle;
+            anim.SetTrigger("MoveToIdle");
         }
     }
 
