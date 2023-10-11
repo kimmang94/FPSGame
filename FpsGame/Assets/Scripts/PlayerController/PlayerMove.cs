@@ -5,9 +5,12 @@ using UnityEngine;
 public class PlayerMove : MonoBehaviour
 {
     public float moveSpeed = 7f;
+    private CharacterController cc;
+    private float gravity = -20f;
+    private float yVelocity = 0; // y축 속도
     void Start()
     {
-        
+        cc = GetComponent<CharacterController>();
     }
 
     // Update is called once per frame
@@ -24,8 +27,12 @@ public class PlayerMove : MonoBehaviour
         // 2.1 메인 카메라를 기준으로 방향변환
         dir = Camera.main.transform.TransformDirection(dir);
         
+        // 2.2 캐릭터 수직 속도에 중력 값을 적용
+        yVelocity += gravity * Time.deltaTime;
+        dir.y = yVelocity;
+
         
-        // 3. 이동 속도에 맞춰 이동
-        transform.position += dir * moveSpeed * Time.deltaTime;
+        // 3. 이동 속도에 맞춰 이동 Move() 는 CharacterController 안에 내장된 함수
+        cc.Move(dir * moveSpeed * Time.deltaTime);
     }
 }
