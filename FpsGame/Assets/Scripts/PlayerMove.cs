@@ -13,7 +13,7 @@ public class PlayerMove : MonoBehaviour
     private float yVelocity = 0;
     [SerializeField] private float jumpPower = 10f;
     private bool isJumping = false;
-    private int hp = 20;
+    public int hp = 20;
     private int maxHp = 20;
     [SerializeField]private Slider hpSlider;
     [SerializeField] private GameObject hitEffect;
@@ -23,7 +23,11 @@ public class PlayerMove : MonoBehaviour
     }
 
     private void Update()
-    {
+    {       
+        if (GameManager.gm.gState != GameManager.GameState.Run)
+        {
+            return;
+        }
         float h = Input.GetAxis("Horizontal");
         float v = Input.GetAxis("Vertical");
 
