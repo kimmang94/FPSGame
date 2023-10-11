@@ -125,7 +125,7 @@ public class EnemyFSM : MonoBehaviour
 
     public void AttackAction()
     {
-        player.GetComponent<PlayerMove>().DamageAction(attackPower);
+       player.GetComponent<PlayerMove>().DamageAction(attackPower);
     }
     
     private void Return()
